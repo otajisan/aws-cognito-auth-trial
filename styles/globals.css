@@ -1,0 +1,21 @@
+@tailwind base;
+
+html,
+body {
+  @apply bg-white
+}
+
+h1 {
+  @apply text-2xl text-black;
+}
+
+h2 {
+  @apply text-xl text-black;
+}
+
+h3 {
+  @apply text-lg text-black;
+}
+
+@tailwind components;
+@tailwind utilities;
