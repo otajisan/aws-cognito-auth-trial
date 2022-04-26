@@ -1,15 +1,12 @@
 import {NextPage} from "next";
 import Router from 'next/router'
-import {PropsWithChildren, useState} from "react";
+import React, {PropsWithChildren, useState} from "react";
 import '@aws-amplify/ui-react/styles.css';
 import {useAuth} from "../../hooks/use-auth";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -20,24 +17,25 @@ import {Alert} from "@mui/material";
 
 
 /**
- * Sign in page
+ * New password page
  *
  * @see https://github.com/mui/material-ui/blob/v5.6.2/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
  *
  * @param props
  * @constructor
  */
-const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
+const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
     const auth = useAuth();
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [isAuthFailed, setAuthFailed] = useState(false);
 
-    const executeSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    const completeNewPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(e);
         console.log(auth)
-        const result = await auth.signIn(username, password);
+        const result = await auth.completeNewPassword(newPassword);
         console.log(result);
         if (result.success) {
             await Router.push('/');
@@ -45,6 +43,8 @@ const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
             setAuthFailed(true);
         }
     };
+
+    console.log('username: ' + auth.username);
 
     const theme = createTheme();
 
@@ -64,36 +64,20 @@ const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
                         <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Hi, Please change your password.
                     </Typography>
-                    <Box component="form" onSubmit={executeSignIn} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={completeNewPassword} noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
                             fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
+                            name="new-password"
+                            label="New Password"
                             type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
-                            label="Remember me"
+                            id="new-password"
+                            autoComplete="new-password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
                         />
                         <Button
                             type="submit"
@@ -101,20 +85,8 @@ const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
                             variant="contained"
                             sx={{mt: 3, mb: 2}}
                         >
-                            Sign In
+                            Change password
                         </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Forgot password?
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
-                            </Grid>
-                        </Grid>
                         <Grid container>
                             {isAuthFailed ? (<Alert severity="error">Authentication failed...</Alert>) : (<></>)}
                         </Grid>
@@ -127,5 +99,5 @@ const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
 
 type Props = {};
 
-export default SignIn;
+export default NewPassword;
 

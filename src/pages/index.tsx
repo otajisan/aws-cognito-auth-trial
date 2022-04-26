@@ -1,5 +1,5 @@
 import {NextPage} from "next";
-import {PropsWithChildren, useState} from "react";
+import React, {PropsWithChildren, useState} from "react";
 import {useAuth} from "../hooks/use-auth";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -12,7 +12,7 @@ const Welcome: NextPage = (props: PropsWithChildren<Props>) => {
     const auth = useAuth();
     const [isAuthFailed, setAuthFailed] = useState(false);
 
-    const signOut = async (e) => {
+    const signOut = async (e: any) => {
         e.preventDefault();
         const result = await auth.signOut();
         if (result.success) {
@@ -23,20 +23,19 @@ const Welcome: NextPage = (props: PropsWithChildren<Props>) => {
     };
 
     return (
-        <AuthenticationChecker>
-            <div className={'flex m-4'}>
-                <Box>
-                    <div className={'mb-4'}><h1>Welcome {auth.username} !!</h1></div>
-                    <div className={'mb-4'}><h3>Login: {auth.isAuthenticated ? 'signed in' : 'not signed in'}</h3></div>
-                    <Button onClick={signOut} variant={'outlined'} disabled={auth.isLoading}>
-                        Sign out
-                    </Button>
-                    <Grid container>
-                        {isAuthFailed ? (<Alert severity="error">Failed to sign out...</Alert>) : (<></>)}
-                    </Grid>
-                </Box>
-            </div>
-        </AuthenticationChecker>
+        <div className={'flex m-4'}>
+            <Box>
+                <div className={'mb-4'}><h1>Welcome {auth.username} !!</h1></div>
+                <div className={'mb-4'}><h3>Login: {auth.isAuthenticated ? 'signed in' : 'not signed in'}</h3></div>
+
+                <Button onClick={signOut} variant={'outlined'} disabled={auth.isLoading}>
+                    Sign out
+                </Button>
+                <Grid container>
+                    {isAuthFailed ? (<Alert severity="error">Failed to sign out...</Alert>) : (<></>)}
+                </Grid>
+            </Box>
+        </div>
     );
 };
 

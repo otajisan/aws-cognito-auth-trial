@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {Tab, Tabs} from '@mui/material';
 import {AppPages, useTabNavigation} from '../hooks/use-tab-navigation';
+import {useAuth} from "../hooks/use-auth";
 
 const Header = () => {
     return (
@@ -15,7 +16,9 @@ const Header = () => {
 const NavigationBar = () => {
     const {selectedTab, setSelectedTab, handleTabChange, handleMenuClick} = useTabNavigation();
 
-    if (selectedTab === undefined) {
+    const {isAuthenticated} = useAuth();
+
+    if (!isAuthenticated || selectedTab === undefined) {
         return <></>;
     }
 

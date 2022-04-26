@@ -1,18 +1,21 @@
 import {ReactNode} from "react";
 import {useAuth} from "../hooks/use-auth";
-import Router from "next/router";
+import Router, {useRouter} from "next/router";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 const AuthenticationChecker = ({children}: Props) => {
     const {isAuthenticated} = useAuth();
+    const router = useRouter()
+    const currentPage = router.pathname
 
     const goToSignIn = async (e) => {
         e.preventDefault();
-        await Router.push('/signin');
+        await router.push('/signin');
     }
 
-    if (isAuthenticated) {
+    console.log('isAuthenticated: ' + isAuthenticated);
+    if (currentPage === '/signin' || isAuthenticated) {
         return (<>{children}</>)
     } else {
         return (

@@ -1,6 +1,7 @@
 import {Amplify, Auth} from "aws-amplify";
 import AwsConfigAuth from "../aws/auth";
-import React, {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import {useRouter} from "next/router";
 
 console.log(AwsConfigAuth);
 Amplify.configure({Auth: AwsConfigAuth, ssr: true});
@@ -13,6 +14,8 @@ interface UseAuth {
     confirmSignUp: (verificationCode: string) => Promise<Result>;
     signIn: (username: string, password: string) => Promise<Result>;
     signOut: () => Promise<Result>;
+    completeNewPassword: (newPassword: string) => Promise<Result>;
+    changePassword: (oldPassword: string, newPassword: string) => Promise<Result>;
 }
 
 interface Result {
@@ -22,7 +25,11 @@ interface Result {
 
 const authContext = createContext({} as UseAuth);
 
-export const ProvideAuth: React.FC = ({children}) => {
+type Props = {
+    children?: ReactNode;
+};
+
+export const ProvideAuth: React.FC = ({children}: Props) => {
     const auth = useProvideAuth();
     return <authContext.Provider value={auth}>{children}</authContext.Provider>;
 };
@@ -36,10 +43,14 @@ const useProvideAuth = (): UseAuth => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [signedUpUser, setSignedUpUser] = useState(null);
+
+    const router = useRouter();
 
     useEffect(() => {
-        Auth.currentAuthenticatedUser()
+        Auth.currentAuthenticatedUser({bypassCache: false})
             .then((result) => {
+                console.log(result)
                 setUsername(result.username);
                 setIsAuthenticated(true);
                 setIsLoading(false);
@@ -83,9 +94,17 @@ const useProvideAuth = (): UseAuth => {
 
     const signIn = async (username: string, password: string) => {
         try {
-            const result = await Auth.signIn(username, password);
-            setUsername(result.username);
-            setIsAuthenticated(true);
+            await Auth.signIn(username, password).then((result) => {
+                setUsername(result.username);
+                setSignedUpUser(result);
+                setIsAuthenticated(true);
+                const challengeName = result.challengeName;
+                console.log('challengeName:' + challengeName);
+                if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+                    router.push('password/new').then();
+                }
+            });
+
             return {success: true, message: ''};
         } catch (error) {
             return {
@@ -109,6 +128,54 @@ const useProvideAuth = (): UseAuth => {
         }
     };
 
+    const completeNewPassword = async (newPassword: string) => {
+        try {
+            return Auth.completeNewPassword(signedUpUser, newPassword).then((result) => {
+                console.log(result);
+                setIsAuthenticated(true);
+                return {success: true, message: ''};
+            }).catch((e) => {
+                debugger
+                console.error(e.message);
+                return {
+                    success: false,
+                    message: 'failed to change password...',
+                }
+            });
+        } catch (e) {
+            debugger
+            return {
+                success: false,
+                message: 'failed to change password...',
+            }
+        }
+    }
+
+    const changePassword = async (oldPassword: string, newPassword: string) => {
+        try {
+            const user = await Auth.currentAuthenticatedUser();
+            console.log(user)
+            return Auth.changePassword(user, oldPassword, newPassword).then((result) => {
+                console.log(result);
+                setIsAuthenticated(true);
+                return {success: true, message: ''};
+            }).catch((e) => {
+                debugger
+                console.error(e.message);
+                return {
+                    success: false,
+                    message: 'failed to change password...',
+                }
+            });
+        } catch (e) {
+            debugger
+            return {
+                success: false,
+                message: 'failed to change password...',
+            }
+        }
+    };
+
     return {
         isLoading,
         isAuthenticated,
@@ -117,5 +184,7 @@ const useProvideAuth = (): UseAuth => {
         confirmSignUp,
         signIn,
         signOut,
+        completeNewPassword,
+        changePassword,
     };
 }

@@ -2,19 +2,18 @@ import '../../styles/globals.css'
 import type {AppProps} from 'next/app'
 import Layout from '../components/layout';
 import {ProvideAuth} from "../hooks/use-auth";
-import Amplify from "aws-amplify";
-import AwsConfigAuth from "../aws/auth";
-
-//Amplify.configure({Auth: AwsConfigAuth, ssr: true});
+import AuthenticationChecker from "../components/authentication-checker";
 
 
 function AwsCognitoAuthTrial({Component, pageProps}: AppProps) {
     return (
-        <Layout>
-            <ProvideAuth>
-                <Component {...pageProps} />
-            </ProvideAuth>
-        </Layout>
+        <ProvideAuth>
+            <Layout>
+                <AuthenticationChecker>
+                    <Component {...pageProps} />
+                </AuthenticationChecker>
+            </Layout>
+        </ProvideAuth>
     );
 }
 
