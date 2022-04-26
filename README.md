@@ -1,5 +1,10 @@
 # aws-cognito-auth-trial
 
+## Preview
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/5608492/165056966-4cea4f7d-82c8-40df-8e0c-c1b91e90a373.png" width="500">
+</p>
+
 ## env
 
 ```bash
@@ -18,7 +23,7 @@ export NEXT_PUBLIC_AUTH_USER_POOL_WEB_CLIENT_ID=<YOUR_COGNITO_WEB_CLIENT_ID>
 export NEXT_PUBLIC_AUTH_COOKIE_STORAGE_DOMAIN=localhost
 ```
 
-## run
+## run on local machine
 
 ```bash
 ❱❱❱ npm run dev
