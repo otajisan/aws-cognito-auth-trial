@@ -1,8 +1,8 @@
-import {NextPage} from "next";
+import {GetServerSideProps, NextPage} from "next";
 import Router from 'next/router'
 import React, {PropsWithChildren, useState} from "react";
 import '@aws-amplify/ui-react/styles.css';
-import {useAuth} from "../../hooks/use-auth";
+import {useAuth, UserAttributes} from "../../hooks/use-auth";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,26 +17,29 @@ import {Alert} from "@mui/material";
 
 
 /**
- * Change password page
+ * Change user attributes page
  *
  * @see https://github.com/mui/material-ui/blob/v5.6.2/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
  *
  * @param props
  * @constructor
  */
-const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
+const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
     const auth = useAuth();
     const [username, setUsername] = useState('');
-    const [verificationCode, setVerificationCode] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [isAuthFailed, setAuthFailed] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const forgotPasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const updateUserAttributes = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(e);
         console.log(auth)
-        const result = await auth.forgotPasswordSubmit(username, verificationCode, newPassword);
+        const attr = {} as UserAttributes;
+        if (email !== '') {
+            attr.email = email;
+        }
+        const result = await auth.updateUserAttributes(attr);
         console.log(result);
         if (result.success) {
             await Router.push('/');
@@ -68,7 +71,19 @@ const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
                     <Typography component="h1" variant="h5">
                         reset your password.
                     </Typography>
-                    <Box component="form" onSubmit={forgotPasswordSubmit} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={updateUserAttributes} noValidate sx={{mt: 1}}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="username"
+                            label="User Name"
+                            name="username"
+                            autoComplete="name"
+                            autoFocus
+                            defaultValue={auth.username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
                         <TextField
                             margin="normal"
                             required
@@ -78,31 +93,8 @@ const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
                             name="email"
                             autoComplete="email"
                             autoFocus
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="verification-code"
-                            label="Verification Code"
-                            name="verification-code"
-                            autoFocus
-                            value={verificationCode}
-                            onChange={(e) => setVerificationCode(e.target.value)}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="new-password"
-                            label="New Password"
-                            type="password"
-                            id="new-password"
-                            autoComplete="new-password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
+                            defaultValue={auth.email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         <Button
                             type="submit"
@@ -110,7 +102,7 @@ const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
                             variant="outlined"
                             sx={{mt: 3, mb: 2}}
                         >
-                            Change password
+                            update
                         </Button>
                         <Grid container>
                             {isAuthFailed ? (<Alert severity="error">{errorMessage}</Alert>) : (<></>)}
@@ -124,5 +116,5 @@ const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
 
 type Props = {};
 
-export default ForgotPasswordSubmit;
+export default ChangeUserAttributes;
 

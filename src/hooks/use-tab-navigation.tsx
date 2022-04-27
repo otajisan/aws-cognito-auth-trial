@@ -6,6 +6,7 @@ import {useRouter} from 'next/router';
 export const AppPages: AppPage[] = [
     {label: 'Top', url: '/'},
     {label: 'Change Password', url: '/password/change'},
+    {label: 'Change User Info', url: '/user/change'},
 ];
 
 export const useTabNavigation = () => {

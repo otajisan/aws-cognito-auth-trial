@@ -2,6 +2,7 @@ import {Amplify, Auth} from "aws-amplify";
 import AwsConfigAuth from "../aws/auth";
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {useRouter} from "next/router";
+import {CognitoUserAttribute} from "amazon-cognito-identity-js";
 
 console.log(AwsConfigAuth);
 Amplify.configure({Auth: AwsConfigAuth, ssr: true});
@@ -11,14 +12,15 @@ interface UseAuth {
     isAuthenticated: boolean;
     isSignedUp: boolean;
     username: string;
-    signUp: (username: string, password: string) => Promise<Result>;
-    confirmSignUp: (verificationCode: string) => Promise<Result>;
+    email: string;
+    currentUser: () => Promise<Result>;
     signIn: (username: string, password: string) => Promise<Result>;
     signOut: () => Promise<Result>;
     completeNewPassword: (newPassword: string) => Promise<Result>;
     changePassword: (oldPassword: string, newPassword: string) => Promise<Result>;
     forgotPassword: (username: string) => Promise<Result>;
     forgotPasswordSubmit: (username: string, verificationCode: string, newPassword: string) => Promise<Result>;
+    updateUserAttributes: (attr: UserAttributes) => Promise<Result>;
 }
 
 interface Result {
@@ -45,7 +47,7 @@ const useProvideAuth = (): UseAuth => {
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [signedUpUser, setSignedUpUser] = useState(null);
     const [isSignedUp, setIsSignedUp] = useState(false);
 
@@ -56,6 +58,7 @@ const useProvideAuth = (): UseAuth => {
             .then((result) => {
                 console.log(result)
                 setUsername(result.username);
+                setEmail(result.attributes.email);
                 setIsAuthenticated(true);
                 setIsSignedUp(true);
                 setIsLoading(false);
@@ -63,114 +66,74 @@ const useProvideAuth = (): UseAuth => {
             })
             .catch(() => {
                 setUsername('');
+                setEmail('');
                 setIsAuthenticated(false);
-                setIsSignedUp(true);
+                setIsSignedUp(false);
                 setIsLoading(false);
                 console.log('not authenticated.');
             });
     }, []);
 
-    const signUp = async (username: string, password: string) => {
-        try {
-            await Auth.signUp({username, password});
-            setUsername(username);
-            setPassword(password);
-            return {success: true, message: ''};
-        } catch (error) {
-            return {
-                success: false,
-                message: 'failed to sign up...',
-            };
-        }
-    };
-
-    const confirmSignUp = async (verificationCode: string) => {
-        try {
-            await Auth.confirmSignUp(username, verificationCode);
-            const result = await signIn(username, password);
-            setPassword('');
-            return result;
-        } catch (error) {
-            return {
-                success: false,
-                message: 'failed to sign up...',
-            };
-        }
-    };
-
     const signIn = async (username: string, password: string) => {
-        try {
-            return await Auth.signIn(username, password).then((result) => {
-                setUsername(result.username);
-                setSignedUpUser(result);
-                setIsSignedUp(true);
-                const challengeName = result.challengeName;
-                console.log('challengeName:' + challengeName);
-                if (challengeName === 'NEW_PASSWORD_REQUIRED') {
-                    router.push('password/new').then();
-                } else {
-                    setIsAuthenticated(true);
-                }
-                return {success: true, message: ''};
-            }).catch(e => {
-                if (e.code === 'PasswordResetRequiredException') {
-                    router.push('password/forgot').then();
-                    return {
-                        success: false,
-                        message: 'required to change password',
-                    };
-                }
+        return await Auth.signIn(username, password).then((result) => {
+            console.log(result);
+            setUsername(result.username);
+            setEmail(result.attributes.email);
+            setSignedUpUser(result);
+            setIsSignedUp(true);
+            const challengeName = result.challengeName;
+            console.log('challengeName:' + challengeName);
+            if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+                router.push('password/new').then();
+            } else {
+                setIsAuthenticated(true);
+            }
+            return {success: true, message: ''};
+        }).catch(e => {
+            console.error(e.code + ': ' + e.message);
+            if (e.code === 'PasswordResetRequiredException') {
+                router.push('password/forgot').then();
                 return {
                     success: false,
-                    message: 'failed to sign in...',
+                    message: 'required to change password',
                 };
-            });
-
-
-        } catch (error) {
+            }
             return {
                 success: false,
                 message: 'failed to sign in...',
             };
-        }
+        });
+
     };
 
     const signOut = async () => {
-        try {
-            await Auth.signOut();
+        return await Auth.signOut().then((result) => {
+            console.log(result);
             setUsername('');
             setIsAuthenticated(false);
             setIsSignedUp(false);
             return {success: true, message: ''};
-        } catch (error) {
+        }).catch(e => {
+            console.error(e.code + ': ' + e.message);
             return {
                 success: false,
                 message: 'failed to sign out...',
             };
-        }
+        });
     };
 
     const completeNewPassword = async (newPassword: string) => {
-        try {
-            return Auth.completeNewPassword(signedUpUser, newPassword).then((result) => {
-                console.log(result);
-                setIsAuthenticated(true);
-                return {success: true, message: ''};
-            }).catch((e) => {
-                debugger
-                console.error(e.message);
-                return {
-                    success: false,
-                    message: 'failed to change password...',
-                }
-            });
-        } catch (e) {
-            debugger
+        return Auth.completeNewPassword(signedUpUser, newPassword).then((result) => {
+            console.log(result);
+            setIsAuthenticated(true);
+            return {success: true, message: ''};
+        }).catch((e) => {
+            console.error(e.code + ': ' + e.message);
             return {
                 success: false,
                 message: 'failed to change password...',
             }
-        }
+        });
     }
 
     const changePassword = async (oldPassword: string, newPassword: string) => {
@@ -182,8 +145,7 @@ const useProvideAuth = (): UseAuth => {
                 setIsAuthenticated(true);
                 return {success: true, message: ''};
             }).catch((e) => {
-                debugger
-                console.error(e.message);
+                console.error(e.code + ': ' + e.message);
                 return {
                     success: false,
                     message: 'failed to change password...',
@@ -199,49 +161,72 @@ const useProvideAuth = (): UseAuth => {
     };
 
     const forgotPassword = async (username: string) => {
-      try {
-          return await Auth.forgotPassword(username)
-              .then((result) => {
-                  console.log(result);
-                  return {success: true, message: ''};
-              }).catch((e) => {
-                  debugger
-                  console.error(e.message);
-                  return {
-                      success: false,
-                      message: 'failed to reset password...',
-                  }
-              });
-      } catch (e) {
-          debugger
-          return {
-              success: false,
-              message: 'failed to reset password...',
-          }
-      }
+        return await Auth.forgotPassword(username)
+            .then((result) => {
+                console.log(result);
+                return {success: true, message: ''};
+            }).catch((e) => {
+                console.error(e.code + ': ' + e.message);
+                return {
+                    success: false,
+                    message: 'failed to reset password...',
+                }
+            });
     };
 
     const forgotPasswordSubmit = async (username: string, verificationCode: string, newPassword: string) => {
-        try {
-            return await Auth.forgotPasswordSubmit(username, verificationCode, newPassword)
-                .then((result) => {
-                    console.log(result);
-                    return {success: true, message: ''};
-                }).catch((e) => {
-                    debugger
-                    console.error(e.message);
+        return await Auth.forgotPasswordSubmit(username, verificationCode, newPassword)
+            .then((result) => {
+                console.log(result);
+                return {success: true, message: ''};
+            }).catch((e) => {
+                console.error(e.code + ': ' + e.message);
+                if (e.code === 'CodeMismatchException') {
                     return {
                         success: false,
-                        message: 'failed to reset password...',
+                        message: 'verification code expired.',
                     }
-                });
-        } catch (e) {
+                }
+                if (e.code === 'LimitExceededException') {
+                    debugger
+                    return {
+                        success: false,
+                        message: 'reached the limit. account has been temporarily locked.',
+                    }
+                }
+                return {
+                    success: false,
+                    message: 'failed to reset password...',
+                }
+            });
+    };
+
+    const updateUserAttributes = async (attr: UserAttributes) => {
+        try {
             debugger
+            const user = await Auth.currentAuthenticatedUser();
+            return await Auth.updateUserAttributes(user, attr)
+                .then(result => {
+                    console.log(result);
+                    return {success: true, message: ''};
+                })
+                .catch(e => {
+                    console.error(e.code + ': ' + e.message);
+                    return {
+                        success: false,
+                        message: 'failed to update user attribute...',
+                    }
+                })
+        } catch (e) {
             return {
                 success: false,
-                message: 'failed to reset password...',
+                message: 'not authorized...',
             }
         }
+    }
+
+    const currentUser = async () => {
+        return await Auth.currentUserInfo();
     };
 
     return {
@@ -249,13 +234,19 @@ const useProvideAuth = (): UseAuth => {
         isAuthenticated,
         isSignedUp,
         username,
-        signUp,
-        confirmSignUp,
+        email,
+        currentUser,
         signIn,
         signOut,
         completeNewPassword,
         changePassword,
         forgotPassword,
         forgotPasswordSubmit,
+        updateUserAttributes,
     };
-}
+};
+
+export type UserAttributes = {
+    username?: string,
+    email?: string,
+};

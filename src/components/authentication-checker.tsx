@@ -27,11 +27,11 @@ const AuthenticationChecker = ({children}: Props) => {
         return (<>{children}</>);
     }
 
-    if (isSignedUp && currentPage === '/password/forgot') {
+    if (currentPage === '/password/forgot') {
         return (<>{children}</>);
     }
 
-    if (isSignedUp && currentPage === '/password/forgot-submit') {
+    if (currentPage === '/password/forgot-submit') {
         return (<>{children}</>);
     }
 
