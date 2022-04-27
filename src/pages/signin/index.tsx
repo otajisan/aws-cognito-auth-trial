@@ -1,6 +1,6 @@
 import {NextPage} from "next";
 import Router from 'next/router'
-import {PropsWithChildren, useState} from "react";
+import React, {PropsWithChildren, useState} from "react";
 import '@aws-amplify/ui-react/styles.css';
 import {useAuth} from "../../hooks/use-auth";
 import Avatar from '@mui/material/Avatar';
@@ -98,20 +98,15 @@ const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
                         <Button
                             type="submit"
                             fullWidth
-                            variant="contained"
+                            variant="outlined"
                             sx={{mt: 3, mb: 2}}
                         >
                             Sign In
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href="#" variant="body2">
+                                <Link href="/password/forgot" variant="body2">
                                     Forgot password?
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
                         </Grid>

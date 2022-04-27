@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 const AuthenticationChecker = ({children}: Props) => {
-    const {isAuthenticated} = useAuth();
+    const {isAuthenticated, isSignedUp} = useAuth();
     const router = useRouter()
     const currentPage = router.pathname
 
@@ -14,21 +14,37 @@ const AuthenticationChecker = ({children}: Props) => {
         await router.push('/signin');
     }
 
-    console.log('isAuthenticated: ' + isAuthenticated);
-    if (currentPage === '/signin' || isAuthenticated) {
-        return (<>{children}</>)
-    } else {
-        return (
-            <div className={'flex m-4'}>
-                <Box>
-                    <div className={'mb-4'}><h1>Please Sign in.</h1></div>
-                    <Button onClick={goToSignIn} variant={'outlined'}>
-                        Go to Sign in page
-                    </Button>
-                </Box>
-            </div>
-        )
+    console.log('isAuthenticated: ' + isAuthenticated + ' isSignedUp: ' + isSignedUp);
+    if (isAuthenticated) {
+        return (<>{children}</>);
     }
+
+    if (currentPage === '/signin') {
+        return (<>{children}</>);
+    }
+
+    if (isSignedUp && currentPage === '/password/new') {
+        return (<>{children}</>);
+    }
+
+    if (isSignedUp && currentPage === '/password/forgot') {
+        return (<>{children}</>);
+    }
+
+    if (isSignedUp && currentPage === '/password/forgot-submit') {
+        return (<>{children}</>);
+    }
+
+    return (
+        <div className={'flex m-4'}>
+            <Box>
+                <div className={'mb-4'}><h1>Please Sign in.</h1></div>
+                <Button onClick={goToSignIn} variant={'outlined'}>
+                    Go to Sign in page
+                </Button>
+            </Box>
+        </div>
+    );
 }
 
 type Props = {

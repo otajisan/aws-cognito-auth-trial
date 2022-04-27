@@ -24,21 +24,19 @@ import {Alert} from "@mui/material";
  * @param props
  * @constructor
  */
-const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
+const ForgotPassword: NextPage = (props: PropsWithChildren<Props>) => {
     const auth = useAuth();
     const [username, setUsername] = useState('');
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
     const [isAuthFailed, setAuthFailed] = useState(false);
 
-    const completeNewPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    const forgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(e);
         console.log(auth)
-        const result = await auth.completeNewPassword(newPassword);
+        const result = await auth.forgotPassword(username);
         console.log(result);
         if (result.success) {
-            await Router.push('/');
+            await Router.push('/password/forgot-submit');
         } else {
             setAuthFailed(true);
         }
@@ -66,18 +64,18 @@ const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
                     <Typography component="h1" variant="h5">
                         Hi, Please change your password.
                     </Typography>
-                    <Box component="form" onSubmit={completeNewPassword} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={forgotPassword} noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
                             fullWidth
-                            name="new-password"
-                            label="New Password"
-                            type="password"
-                            id="new-password"
-                            autoComplete="new-password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                         />
                         <Button
                             type="submit"
@@ -88,7 +86,7 @@ const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
                             Change password
                         </Button>
                         <Grid container>
-                            {isAuthFailed ? (<Alert severity="error">Authentication failed...</Alert>) : (<></>)}
+                            {isAuthFailed ? (<Alert severity="error">Failed to reset password...</Alert>) : (<></>)}
                         </Grid>
                     </Box>
                 </Box>
@@ -99,5 +97,5 @@ const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
 
 type Props = {};
 
-export default NewPassword;
+export default ForgotPassword;
 

@@ -17,25 +17,25 @@ import {Alert} from "@mui/material";
 
 
 /**
- * New password page
+ * Change password page
  *
  * @see https://github.com/mui/material-ui/blob/v5.6.2/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
  *
  * @param props
  * @constructor
  */
-const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
+const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
     const auth = useAuth();
     const [username, setUsername] = useState('');
-    const [currentPassword, setCurrentPassword] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [isAuthFailed, setAuthFailed] = useState(false);
 
-    const completeNewPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    const forgotPasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(e);
         console.log(auth)
-        const result = await auth.completeNewPassword(newPassword);
+        const result = await auth.forgotPasswordSubmit(username, verificationCode, newPassword);
         console.log(result);
         if (result.success) {
             await Router.push('/');
@@ -64,9 +64,32 @@ const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
                         <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Hi, Please change your password.
+                        change your password.
                     </Typography>
-                    <Box component="form" onSubmit={completeNewPassword} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={forgotPasswordSubmit} noValidate sx={{mt: 1}}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="verification-code"
+                            label="Verification Code"
+                            name="verification-code"
+                            autoFocus
+                            value={verificationCode}
+                            onChange={(e) => setVerificationCode(e.target.value)}
+                        />
                         <TextField
                             margin="normal"
                             required
@@ -99,5 +122,5 @@ const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
 
 type Props = {};
 
-export default NewPassword;
+export default ForgotPasswordSubmit;
 

@@ -9,6 +9,7 @@ Amplify.configure({Auth: AwsConfigAuth, ssr: true});
 interface UseAuth {
     isLoading: boolean;
     isAuthenticated: boolean;
+    isSignedUp: boolean;
     username: string;
     signUp: (username: string, password: string) => Promise<Result>;
     confirmSignUp: (verificationCode: string) => Promise<Result>;
@@ -16,6 +17,8 @@ interface UseAuth {
     signOut: () => Promise<Result>;
     completeNewPassword: (newPassword: string) => Promise<Result>;
     changePassword: (oldPassword: string, newPassword: string) => Promise<Result>;
+    forgotPassword: (username: string) => Promise<Result>;
+    forgotPasswordSubmit: (username: string, verificationCode: string, newPassword: string) => Promise<Result>;
 }
 
 interface Result {
@@ -44,6 +47,7 @@ const useProvideAuth = (): UseAuth => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [signedUpUser, setSignedUpUser] = useState(null);
+    const [isSignedUp, setIsSignedUp] = useState(false);
 
     const router = useRouter();
 
@@ -53,12 +57,14 @@ const useProvideAuth = (): UseAuth => {
                 console.log(result)
                 setUsername(result.username);
                 setIsAuthenticated(true);
+                setIsSignedUp(true);
                 setIsLoading(false);
                 console.log('already authenticated.')
             })
             .catch(() => {
                 setUsername('');
                 setIsAuthenticated(false);
+                setIsSignedUp(true);
                 setIsLoading(false);
                 console.log('not authenticated.');
             });
@@ -97,11 +103,13 @@ const useProvideAuth = (): UseAuth => {
             await Auth.signIn(username, password).then((result) => {
                 setUsername(result.username);
                 setSignedUpUser(result);
-                setIsAuthenticated(true);
+                setIsSignedUp(true);
                 const challengeName = result.challengeName;
                 console.log('challengeName:' + challengeName);
                 if (challengeName === 'NEW_PASSWORD_REQUIRED') {
                     router.push('password/new').then();
+                } else {
+                    setIsAuthenticated(true);
                 }
             });
 
@@ -119,6 +127,7 @@ const useProvideAuth = (): UseAuth => {
             await Auth.signOut();
             setUsername('');
             setIsAuthenticated(false);
+            setIsSignedUp(false);
             return {success: true, message: ''};
         } catch (error) {
             return {
@@ -176,9 +185,56 @@ const useProvideAuth = (): UseAuth => {
         }
     };
 
+    const forgotPassword = async (username: string) => {
+      try {
+          return await Auth.forgotPassword(username)
+              .then((result) => {
+                  console.log(result);
+                  return {success: true, message: ''};
+              }).catch((e) => {
+                  debugger
+                  console.error(e.message);
+                  return {
+                      success: false,
+                      message: 'failed to reset password...',
+                  }
+              });
+      } catch (e) {
+          debugger
+          return {
+              success: false,
+              message: 'failed to reset password...',
+          }
+      }
+    };
+
+    const forgotPasswordSubmit = async (username: string, verificationCode: string, newPassword: string) => {
+        try {
+            return await Auth.forgotPasswordSubmit(username, verificationCode, newPassword)
+                .then((result) => {
+                    console.log(result);
+                    return {success: true, message: ''};
+                }).catch((e) => {
+                    debugger
+                    console.error(e.message);
+                    return {
+                        success: false,
+                        message: 'failed to reset password...',
+                    }
+                });
+        } catch (e) {
+            debugger
+            return {
+                success: false,
+                message: 'failed to reset password...',
+            }
+        }
+    };
+
     return {
         isLoading,
         isAuthenticated,
+        isSignedUp,
         username,
         signUp,
         confirmSignUp,
@@ -186,5 +242,7 @@ const useProvideAuth = (): UseAuth => {
         signOut,
         completeNewPassword,
         changePassword,
+        forgotPassword,
+        forgotPasswordSubmit,
     };
 }
