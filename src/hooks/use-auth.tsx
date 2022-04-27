@@ -100,7 +100,7 @@ const useProvideAuth = (): UseAuth => {
 
     const signIn = async (username: string, password: string) => {
         try {
-            await Auth.signIn(username, password).then((result) => {
+            return await Auth.signIn(username, password).then((result) => {
                 setUsername(result.username);
                 setSignedUpUser(result);
                 setIsSignedUp(true);
@@ -111,9 +111,22 @@ const useProvideAuth = (): UseAuth => {
                 } else {
                     setIsAuthenticated(true);
                 }
+                return {success: true, message: ''};
+            }).catch(e => {
+                if (e.code === 'PasswordResetRequiredException') {
+                    router.push('password/forgot').then();
+                    return {
+                        success: false,
+                        message: 'required to change password',
+                    };
+                }
+                return {
+                    success: false,
+                    message: 'failed to sign in...',
+                };
             });
 
-            return {success: true, message: ''};
+
         } catch (error) {
             return {
                 success: false,
