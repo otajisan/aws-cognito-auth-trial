@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 const AuthenticationChecker = ({children}: Props) => {
-    const {isAuthenticated, isSignedUp} = useAuth();
+    const {isAuthenticated, isSignedIn} = useAuth();
     const router = useRouter()
     const currentPage = router.pathname
 
@@ -14,7 +14,7 @@ const AuthenticationChecker = ({children}: Props) => {
         await router.push('/signin');
     }
 
-    console.log('isAuthenticated: ' + isAuthenticated + ' isSignedUp: ' + isSignedUp);
+    console.log('isAuthenticated: ' + isAuthenticated + ' isSignedUp: ' + isSignedIn);
     if (isAuthenticated) {
         return (<>{children}</>);
     }
@@ -23,7 +23,7 @@ const AuthenticationChecker = ({children}: Props) => {
         return (<>{children}</>);
     }
 
-    if (isSignedUp && currentPage === '/password/new') {
+    if (isSignedIn && currentPage === '/password/new') {
         return (<>{children}</>);
     }
 

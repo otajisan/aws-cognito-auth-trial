@@ -10,7 +10,7 @@ Amplify.configure({Auth: AwsConfigAuth, ssr: true});
 interface UseAuth {
     isLoading: boolean;
     isAuthenticated: boolean;
-    isSignedUp: boolean;
+    isSignedIn: boolean;
     username: string;
     groups: string[];
     email: string;
@@ -53,7 +53,7 @@ const useProvideAuth = (): UseAuth => {
     const [email, setEmail] = useState('');
     const [groups, setGroups] = useState<string[]>([]);
     const [signedUpUser, setSignedUpUser] = useState(null);
-    const [isSignedUp, setIsSignedUp] = useState(false);
+    const [isSignedIn, setIsSignedIn] = useState(false);
 
     const router = useRouter();
 
@@ -76,7 +76,7 @@ const useProvideAuth = (): UseAuth => {
                 setUsername(result.username);
                 setEmail(result.attributes.email);
                 setIsAuthenticated(true);
-                setIsSignedUp(true);
+                setIsSignedIn(true);
                 setIsLoading(false);
                 console.log('already authenticated.')
             })
@@ -84,7 +84,7 @@ const useProvideAuth = (): UseAuth => {
                 setUsername('');
                 setEmail('');
                 setIsAuthenticated(false);
-                setIsSignedUp(false);
+                setIsSignedIn(false);
                 setIsLoading(false);
                 console.log('not authenticated.');
             });
@@ -96,7 +96,7 @@ const useProvideAuth = (): UseAuth => {
             setUsername(result.username);
             setEmail(result.attributes.email);
             setSignedUpUser(result);
-            setIsSignedUp(true);
+            setIsSignedIn(true);
             const challengeName = result.challengeName;
             console.log('challengeName:' + challengeName);
             if (challengeName === 'NEW_PASSWORD_REQUIRED') {
@@ -127,7 +127,7 @@ const useProvideAuth = (): UseAuth => {
             console.log(result);
             setUsername('');
             setIsAuthenticated(false);
-            setIsSignedUp(false);
+            setIsSignedIn(false);
             return {success: true, message: ''};
         }).catch(e => {
             console.error(e.code + ': ' + e.message);
@@ -290,7 +290,7 @@ const useProvideAuth = (): UseAuth => {
     return {
         isLoading,
         isAuthenticated,
-        isSignedUp,
+        isSignedIn: isSignedIn,
         username,
         groups,
         email,

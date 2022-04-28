@@ -16,17 +16,22 @@ const Header = () => {
 const NavigationBar = () => {
     const {selectedTab, setSelectedTab, handleTabChange, handleMenuClick} = useTabNavigation();
 
-    const {isLoading, isAuthenticated} = useAuth();
+    const {isLoading, isAuthenticated, isSignedIn} = useAuth();
     console.log('[tab] isLoading: ' + isLoading + ' isAuthenticated:' + isAuthenticated);
     console.log(selectedTab);
 
-    if (!isLoading) {
-        console.warn('now still loading auth...');
-        return <></>;
-    }
+    // if (!isLoading) {
+    //     console.warn('now still loading auth...');
+    //     return <></>;
+    // }
 
-    if (!isAuthenticated) {
-        console.warn('not authorized.');
+    // if (!isAuthenticated) {
+    //     console.warn('not authorized.');
+    //     return <></>;
+    // }
+
+    if (!isSignedIn) {
+        console.warn('not signed in.');
         return <></>;
     }
 
