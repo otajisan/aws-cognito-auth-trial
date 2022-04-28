@@ -26,7 +26,6 @@ import {Alert} from "@mui/material";
  */
 const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
     const auth = useAuth();
-    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [isAuthFailed, setAuthFailed] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -69,9 +68,20 @@ const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
                         <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        reset your password.
+                        update your attributes.
                     </Typography>
                     <Box component="form" onSubmit={updateUserAttributes} noValidate sx={{mt: 1}}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="groups"
+                            label="Groups"
+                            name="groups"
+                            defaultValue={auth.groups.join(',')}
+                            contentEditable={false}
+                            disabled={true}
+                        />
                         <TextField
                             margin="normal"
                             required
@@ -79,10 +89,9 @@ const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
                             id="username"
                             label="User Name"
                             name="username"
-                            autoComplete="name"
-                            autoFocus
                             defaultValue={auth.username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            contentEditable={false}
+                            disabled={true}
                         />
                         <TextField
                             margin="normal"

@@ -12,6 +12,7 @@ interface UseAuth {
     isAuthenticated: boolean;
     isSignedUp: boolean;
     username: string;
+    groups: string[];
     email: string;
     currentUser: () => Promise<Result>;
     signIn: (username: string, password: string) => Promise<Result>;
@@ -48,6 +49,7 @@ const useProvideAuth = (): UseAuth => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [groups, setGroups] = useState<string[]>([]);
     const [signedUpUser, setSignedUpUser] = useState(null);
     const [isSignedUp, setIsSignedUp] = useState(false);
 
@@ -57,6 +59,18 @@ const useProvideAuth = (): UseAuth => {
         Auth.currentAuthenticatedUser({bypassCache: false})
             .then((result) => {
                 console.log(result)
+                // Auth.currentSession().then(session => {
+                //    console.log(session);
+                //     const { payload } = session.getIdToken();
+                //     if (payload && payload['cognito:groups'] ) {
+                //         setGroups(payload['cognito:groups']);
+                //     }
+                // });
+                const session = result.signInUserSession;
+                const { payload } = session.getIdToken();
+                if (payload && payload['cognito:groups'] ) {
+                    setGroups(payload['cognito:groups']);
+                }
                 setUsername(result.username);
                 setEmail(result.attributes.email);
                 setIsAuthenticated(true);
@@ -234,6 +248,7 @@ const useProvideAuth = (): UseAuth => {
         isAuthenticated,
         isSignedUp,
         username,
+        groups,
         email,
         currentUser,
         signIn,
