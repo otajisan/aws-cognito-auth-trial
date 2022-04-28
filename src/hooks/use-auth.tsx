@@ -22,6 +22,8 @@ interface UseAuth {
     forgotPassword: (username: string) => Promise<Result>;
     forgotPasswordSubmit: (username: string, verificationCode: string, newPassword: string) => Promise<Result>;
     updateUserAttributes: (attr: UserAttributes) => Promise<Result>;
+    verifyCurrentUserAttributeSubmit: (verificationCode: string) => Promise<Result>;
+    verifyCurrentUserAttribute: () => Promise<Result>;
 }
 
 interface Result {
@@ -67,8 +69,8 @@ const useProvideAuth = (): UseAuth => {
                 //     }
                 // });
                 const session = result.signInUserSession;
-                const { payload } = session.getIdToken();
-                if (payload && payload['cognito:groups'] ) {
+                const {payload} = session.getIdToken();
+                if (payload && payload['cognito:groups']) {
                     setGroups(payload['cognito:groups']);
                 }
                 setUsername(result.username);
@@ -222,6 +224,9 @@ const useProvideAuth = (): UseAuth => {
             return await Auth.updateUserAttributes(user, attr)
                 .then(result => {
                     console.log(result);
+                    if (attr.email !== null && typeof attr.email !== undefined) {
+                        setEmail(attr.email!);
+                    }
                     return {success: true, message: ''};
                 })
                 .catch(e => {
@@ -237,7 +242,46 @@ const useProvideAuth = (): UseAuth => {
                 message: 'not authorized...',
             }
         }
-    }
+    };
+
+    const verifyCurrentUserAttributeSubmit = async (verificationCode: string) => {
+        return await Auth.verifyCurrentUserAttributeSubmit('email', verificationCode)
+            .then((result) => {
+                console.log(result);
+                return {success: true, message: ''};
+            }).catch((e) => {
+                console.error(e.code + ': ' + e.message);
+                if (e.code === 'ExpiredCodeException') {
+                    return {
+                        success: false,
+                        message: 'your verification code is expired. please re-send verification code.',
+                    }
+                } else if (e.code === 'CodeMismatchException') {
+                    return {
+                        success: false,
+                        message: 'your verification code is mismatched. please check.',
+                    }
+                }
+                return {
+                    success: false,
+                    message: 'failed to verify email...',
+                }
+            });
+    };
+
+    const verifyCurrentUserAttribute = async () => {
+        return await Auth.verifyCurrentUserAttribute('email')
+            .then((result) => {
+                console.log(result);
+                return {success: true, message: ''};
+            }).catch((e) => {
+                console.error(e.code + ': ' + e.message);
+                return {
+                    success: false,
+                    message: 'failed to re-send verification code...',
+                }
+            });
+    };
 
     const currentUser = async () => {
         return await Auth.currentUserInfo();
@@ -258,6 +302,8 @@ const useProvideAuth = (): UseAuth => {
         forgotPassword,
         forgotPasswordSubmit,
         updateUserAttributes,
+        verifyCurrentUserAttributeSubmit,
+        verifyCurrentUserAttribute,
     };
 };
 

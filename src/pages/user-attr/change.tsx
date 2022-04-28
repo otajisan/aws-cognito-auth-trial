@@ -41,7 +41,7 @@ const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
         const result = await auth.updateUserAttributes(attr);
         console.log(result);
         if (result.success) {
-            await Router.push('/');
+            await Router.push('/user-attr/verification-submit');
         } else {
             setAuthFailed(true);
             setErrorMessage(result.message);

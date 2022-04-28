@@ -16,12 +16,26 @@ const Header = () => {
 const NavigationBar = () => {
     const {selectedTab, setSelectedTab, handleTabChange, handleMenuClick} = useTabNavigation();
 
-    const {isAuthenticated} = useAuth();
+    const {isLoading, isAuthenticated} = useAuth();
+    console.log('[tab] isLoading: ' + isLoading + ' isAuthenticated:' + isAuthenticated);
+    console.log(selectedTab);
 
-    if (!isAuthenticated || selectedTab === undefined) {
+    if (!isLoading) {
+        console.warn('now still loading auth...');
         return <></>;
     }
 
+    if (!isAuthenticated) {
+        console.warn('not authorized.');
+        return <></>;
+    }
+
+    if (selectedTab === undefined) {
+        console.warn('selected tab is undefined.');
+        return <></>;
+    }
+
+    console.log('return tab navigation bar.')
     return (
         <Tabs
             value={selectedTab.url}
