@@ -3,11 +3,11 @@
 // import * as Cdk from '../lib/cdk-stack';
 
 // example test. To run these tests, uncomment this file along with the
-// example resource in lib/aws-cognito-auth-trial-stack.ts
+// example resource in lib/aws-cognito-auth-trial-app-stack.ts
 test('SQS Queue Created', () => {
 //   const app = new cdk.App();
 //     // WHEN
-//   const stack = new Cdk.AwsCognitoAuthTrialStack(app, 'MyTestStack');
+//   const stack = new Cdk.AwsCognitoAuthTrialAppStack(app, 'MyTestStack');
 //     // THEN
 //   const template = Template.fromStack(stack);
 

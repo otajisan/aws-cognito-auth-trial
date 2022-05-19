@@ -8,7 +8,7 @@ import {ManagedPolicy} from "aws-cdk-lib/aws-iam";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Repository} from "aws-cdk-lib/aws-ecr";
 
-export class AwsCognitoAuthTrialStack extends Stack {
+export class AwsCognitoAuthTrialAppStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
