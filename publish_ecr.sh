@@ -10,6 +10,6 @@ docker build -t ${ECRNAME} .
 docker tag ${ECRNAME}:${TAG} "${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECRNAME}:${TAG}"
 
 # push
-aws ecr get-login-password --region ap-northeast-1 --profile gp-ci-admin | docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com"
+aws ecr get-login-password --region ap-northeast-1 --profile morning-code-dev | docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com"
 docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECRNAME}:${TAG}"
 
