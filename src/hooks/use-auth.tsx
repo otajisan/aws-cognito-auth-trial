@@ -94,7 +94,6 @@ const useProvideAuth = (): UseAuth => {
         return await Auth.signIn(username, password).then((result) => {
             console.log(result);
             setUsername(result.username);
-            setEmail(result.attributes.email);
             setSignedUpUser(result);
             setIsSignedIn(true);
             const challengeName = result.challengeName;
@@ -102,8 +101,10 @@ const useProvideAuth = (): UseAuth => {
             if (challengeName === 'NEW_PASSWORD_REQUIRED') {
                 router.push('password/new').then();
             } else {
+                setEmail(result.attributes.email);
                 setIsAuthenticated(true);
             }
+
             return {success: true, message: ''};
         }).catch(e => {
             console.error(e.code + ': ' + e.message);
