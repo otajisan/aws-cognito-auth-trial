@@ -7,6 +7,7 @@ import {ApplicationLoadBalancedFargateService} from "aws-cdk-lib/aws-ecs-pattern
 import {ManagedPolicy} from "aws-cdk-lib/aws-iam";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Repository} from "aws-cdk-lib/aws-ecr";
+import {StringParameter} from "aws-cdk-lib/aws-ssm";
 
 export class AwsCognitoAuthTrialAppStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -45,12 +46,24 @@ export class AwsCognitoAuthTrialAppStack extends Stack {
             streamPrefix: appName,
         });
 
+        // Cognito Auth configurations
+        const cognitoUserPoolId = StringParameter.valueFromLookup(this, 'COGNITO_AUTH_USER_POOL_ID');
+        const cognitoWebClientId = StringParameter.valueFromLookup(this, 'COGNITO_AUTH_USER_POOL_WEB_CLIENT_ID');
+
         // Application Container
         const containerDefinition = taskDefinition.addContainer('Container', {
             image: containerImage,
             memoryLimitMiB: 768,
             logging: awsLogDriver,
             environment: {
+                // Cognito Auth configurations
+                NEXT_PUBLIC_AUTH_REGION: 'ap-northeast-1',
+                NEXT_PUBLIC_AUTH_USER_POOL_ID: cognitoUserPoolId,
+                NEXT_PUBLIC_AUTH_USER_POOL_WEB_CLIENT_ID: cognitoWebClientId,
+                NEXT_PUBLIC_AUTH_COOKIE_STORAGE_DOMAIN: 'auth-trial.morningcode.io',
+                // conceal source codes
+                GENERATE_SOURCEMAP: 'false',
+                // hash for deployment
                 DEPLOY_HASH: process.env.GIT_SHA1 as string,
             },
         });
