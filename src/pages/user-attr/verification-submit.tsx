@@ -33,7 +33,6 @@ const VerificationSubmitUserAttributes: NextPage = (props: PropsWithChildren<Pro
     const verifyCurrentUserAttributeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const result = await auth.verifyCurrentUserAttributeSubmit(verificationCode);
-        console.log(result);
         if (result.success) {
             await Router.push('/user-attr/change');
         } else {
@@ -50,8 +49,6 @@ const VerificationSubmitUserAttributes: NextPage = (props: PropsWithChildren<Pro
             setErrorMessage(result.message);
         }
     };
-
-    console.log('username: ' + auth.username);
 
     const theme = createTheme();
 

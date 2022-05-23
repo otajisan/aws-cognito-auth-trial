@@ -33,18 +33,13 @@ const NewPassword: NextPage = (props: PropsWithChildren<Props>) => {
 
     const completeNewPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(e);
-        console.log(auth)
         const result = await auth.completeNewPassword(newPassword);
-        console.log(result);
         if (result.success) {
             await Router.push('/');
         } else {
             setAuthFailed(true);
         }
     };
-
-    console.log('username: ' + auth.username);
 
     const theme = createTheme();
 

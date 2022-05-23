@@ -35,10 +35,7 @@ const SignIn: NextPage = (props: PropsWithChildren<Props>) => {
 
     const executeSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(e);
-        console.log(auth)
         const result = await auth.signIn(username, password);
-        console.log(result);
         if (result.success) {
             await Router.push('/');
         } else {

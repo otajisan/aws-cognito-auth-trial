@@ -8,15 +8,21 @@
 ## env
 
 ```bash
+❱❱❱ volta install node@16.15.0
 ❱❱❱ node -v
-v16.14.2
+v16.15.0
 
+❱❱❱ volta install npm@8.5.5
 ❱❱❱ npm -v
-8.5.0
+8.5.5
 ```
 
 ```bash
 ❱❱❱ cat .envrc
+# for build Docker image
+export AWS_ACCOUNT_ID=<YOUR_AWS_ACCOUNT_ID>
+
+# application environment variables
 export NEXT_PUBLIC_AUTH_REGION=<YOUR_COGNITO_REGION>
 export NEXT_PUBLIC_AUTH_USER_POOL_ID=<YOUR_COGNITO_USER_POOL_ID>
 export NEXT_PUBLIC_AUTH_USER_POOL_WEB_CLIENT_ID=<YOUR_COGNITO_WEB_CLIENT_ID>
@@ -28,6 +34,27 @@ export NEXT_PUBLIC_AUTH_COOKIE_STORAGE_DOMAIN=localhost
 ```bash
 ❱❱❱ npm run dev
 ```
+
+## build image
+
+```bash
+./publish_ecr.sh
+```
+
+## Production configuration
+
+- write following configurations in `.env.production.local`
+
+```bash
+NEXT_PUBLIC_AUTH_REGION=<YOUR_COGNITO_REGION>
+NEXT_PUBLIC_AUTH_USER_POOL_ID=<YOUR_COGNITO_USER_POOL_ID>
+NEXT_PUBLIC_AUTH_USER_POOL_WEB_CLIENT_ID=<YOUR_COGNITO_WEB_CLIENT_ID>
+NEXT_PUBLIC_AUTH_COOKIE_STORAGE_DOMAIN=auth-trial.morningcode.io
+```
+
+## deploy to AWS
+
+- see [cdk](https://github.com/otajisan/aws-cognito-auth-trial/tree/main/cdk) directory.
 
 ## references
 - https://tailwindcss.com/docs/installation

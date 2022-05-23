@@ -1,10 +1,9 @@
 import {Amplify, Auth} from "aws-amplify";
 import AwsConfigAuth from "../aws/auth";
-import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import React, {createContext, PropsWithChildren, ReactChild, ReactNode, useContext, useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {CognitoUserAttribute} from "amazon-cognito-identity-js";
 
-console.log(AwsConfigAuth);
 Amplify.configure({Auth: AwsConfigAuth, ssr: true});
 
 interface UseAuth {
@@ -34,12 +33,15 @@ interface Result {
 const authContext = createContext({} as UseAuth);
 
 type Props = {
-    children?: ReactNode;
+    children?: ReactChild;
 };
 
-export const ProvideAuth: React.FC = ({children}: Props) => {
+// NOTE: React 18
+// @see https://github.com/chakra-ui/chakra-ui/issues/5896
+// @see https://github.com/chakra-ui/chakra-ui/pull/5845
+export const ProvideAuth: React.FC<PropsWithChildren<Props>> = (props) => {
     const auth = useProvideAuth();
-    return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+    return <authContext.Provider value={auth}>{props.children}</authContext.Provider>;
 };
 
 export const useAuth = () => {
@@ -60,7 +62,6 @@ const useProvideAuth = (): UseAuth => {
     useEffect(() => {
         Auth.currentAuthenticatedUser({bypassCache: false})
             .then((result) => {
-                console.log(result)
                 // Auth.currentSession().then(session => {
                 //    console.log(session);
                 //     const { payload } = session.getIdToken();
@@ -92,18 +93,17 @@ const useProvideAuth = (): UseAuth => {
 
     const signIn = async (username: string, password: string) => {
         return await Auth.signIn(username, password).then((result) => {
-            console.log(result);
             setUsername(result.username);
-            setEmail(result.attributes.email);
             setSignedUpUser(result);
             setIsSignedIn(true);
             const challengeName = result.challengeName;
-            console.log('challengeName:' + challengeName);
             if (challengeName === 'NEW_PASSWORD_REQUIRED') {
                 router.push('password/new').then();
             } else {
+                setEmail(result.attributes.email);
                 setIsAuthenticated(true);
             }
+
             return {success: true, message: ''};
         }).catch(e => {
             console.error(e.code + ': ' + e.message);
@@ -124,7 +124,6 @@ const useProvideAuth = (): UseAuth => {
 
     const signOut = async () => {
         return await Auth.signOut().then((result) => {
-            console.log(result);
             setUsername('');
             setIsAuthenticated(false);
             setIsSignedIn(false);
@@ -140,7 +139,6 @@ const useProvideAuth = (): UseAuth => {
 
     const completeNewPassword = async (newPassword: string) => {
         return Auth.completeNewPassword(signedUpUser, newPassword).then((result) => {
-            console.log(result);
             setIsAuthenticated(true);
             return {success: true, message: ''};
         }).catch((e) => {
@@ -155,13 +153,10 @@ const useProvideAuth = (): UseAuth => {
     const changePassword = async (oldPassword: string, newPassword: string) => {
         try {
             const user = await Auth.currentAuthenticatedUser();
-            console.log(user)
             return Auth.changePassword(user, oldPassword, newPassword).then((result) => {
-                console.log(result);
                 setIsAuthenticated(true);
                 return {success: true, message: ''};
             }).catch((e) => {
-                console.error(e.code + ': ' + e.message);
                 return {
                     success: false,
                     message: 'failed to change password...',
@@ -179,10 +174,8 @@ const useProvideAuth = (): UseAuth => {
     const forgotPassword = async (username: string) => {
         return await Auth.forgotPassword(username)
             .then((result) => {
-                console.log(result);
                 return {success: true, message: ''};
             }).catch((e) => {
-                console.error(e.code + ': ' + e.message);
                 return {
                     success: false,
                     message: 'failed to reset password...',
@@ -193,7 +186,6 @@ const useProvideAuth = (): UseAuth => {
     const forgotPasswordSubmit = async (username: string, verificationCode: string, newPassword: string) => {
         return await Auth.forgotPasswordSubmit(username, verificationCode, newPassword)
             .then((result) => {
-                console.log(result);
                 return {success: true, message: ''};
             }).catch((e) => {
                 console.error(e.code + ': ' + e.message);
@@ -223,7 +215,6 @@ const useProvideAuth = (): UseAuth => {
             const user = await Auth.currentAuthenticatedUser();
             return await Auth.updateUserAttributes(user, attr)
                 .then(result => {
-                    console.log(result);
                     if (attr.email !== null && typeof attr.email !== undefined) {
                         setEmail(attr.email!);
                     }
@@ -247,7 +238,6 @@ const useProvideAuth = (): UseAuth => {
     const verifyCurrentUserAttributeSubmit = async (verificationCode: string) => {
         return await Auth.verifyCurrentUserAttributeSubmit('email', verificationCode)
             .then((result) => {
-                console.log(result);
                 return {success: true, message: ''};
             }).catch((e) => {
                 console.error(e.code + ': ' + e.message);
@@ -272,7 +262,6 @@ const useProvideAuth = (): UseAuth => {
     const verifyCurrentUserAttribute = async () => {
         return await Auth.verifyCurrentUserAttribute('email')
             .then((result) => {
-                console.log(result);
                 return {success: true, message: ''};
             }).catch((e) => {
                 console.error(e.code + ': ' + e.message);

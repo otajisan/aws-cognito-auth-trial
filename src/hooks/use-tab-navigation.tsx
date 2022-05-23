@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {AppPage} from '../types/page';
-import {useRouter} from 'next/router';
+import {NextRouter, useRouter} from 'next/router';
 
 
 export const AppPages: AppPage[] = [
@@ -15,7 +15,7 @@ export const useTabNavigation = () => {
     const state: AppPage = searchCurrentPage(router);
     const [selectedTab, setSelectedTab] = useState<AppPage>(state);
 
-    const handleTabChange = (e, url) => {
+    const handleTabChange = (e: any, url: string) => {
         e.preventDefault();
         e.stopPropagation();
         setSelectedTab({
@@ -26,7 +26,7 @@ export const useTabNavigation = () => {
         router.push(url, undefined, {shallow: true});
     };
 
-    const handleMenuClick = (e, label, url) => {
+    const handleMenuClick = (e: any, label: string, url: string) => {
         e.preventDefault();
         e.stopPropagation();
         window.location.href = url;
@@ -35,8 +35,8 @@ export const useTabNavigation = () => {
     return {selectedTab, setSelectedTab, handleTabChange, handleMenuClick};
 };
 
-const searchCurrentPage = (router) => {
-    let state: AppPage;
+const searchCurrentPage = (router: NextRouter) => {
+    let state: AppPage = {label: 'Top', url: '/'};
     AppPages.map((page) => {
         if (page.url === router.pathname) {
             state = page;

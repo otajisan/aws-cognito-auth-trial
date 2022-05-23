@@ -1,0 +1,13 @@
+version: '3'
+services:
+  aws-cognito-auth-trial:
+    build:
+      context: .
+    working_dir: /aws-cognito-auth-trial
+    ports:
+      - '3000:3000'
+    tty: true
+    stdin_open: true
+    environment:
+      # Hot reload
+      - CHOKIDAR_USEPOLLING=true

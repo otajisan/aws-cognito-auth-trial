@@ -34,10 +34,7 @@ const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
 
     const forgotPasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(e);
-        console.log(auth)
         const result = await auth.forgotPasswordSubmit(username, verificationCode, newPassword);
-        console.log(result);
         if (result.success) {
             await Router.push('/');
         } else {
@@ -45,8 +42,6 @@ const ForgotPasswordSubmit: NextPage = (props: PropsWithChildren<Props>) => {
             setErrorMessage(result.message);
         }
     };
-
-    console.log('username: ' + auth.username);
 
     const theme = createTheme();
 
