@@ -4,18 +4,18 @@ import {Repository} from "aws-cdk-lib/aws-ecr";
 import {TagMutability} from "aws-cdk-lib/aws-ecr/lib/repository";
 
 export class EcrStack extends Stack {
-    constructor(scope: Construct, id: string, props?: StackProps) {
-        super(scope, id, props);
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
-        const repository = new Repository(this, 'AwsCognitoAuthTrialRepository', {
-            repositoryName: 'aws-cognito-auth-trial',
-            imageScanOnPush: true,
-            imageTagMutability: TagMutability.MUTABLE,
-            removalPolicy: RemovalPolicy.DESTROY,
-        });
+    const repository = new Repository(this, 'AwsCognitoAuthTrialRepository', {
+      repositoryName: 'aws-cognito-auth-trial',
+      imageScanOnPush: true,
+      imageTagMutability: TagMutability.MUTABLE,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
-        repository.addLifecycleRule({maxImageCount: 10});
+    repository.addLifecycleRule({maxImageCount: 10});
 
-        Tags.of(this).add('ServiceName', 'morningcode');
-    }
+    Tags.of(this).add('ServiceName', 'morningcode');
+  }
 }
