@@ -9,12 +9,11 @@ const AuthenticationChecker = ({children}: Props) => {
     const router = useRouter()
     const currentPage = router.pathname
 
-    const goToSignIn = async (e) => {
+    const goToSignIn = async (e: any) => {
         e.preventDefault();
         await router.push('/signin');
     }
 
-    console.log('isAuthenticated: ' + isAuthenticated + ' isSignedUp: ' + isSignedIn);
     if (isAuthenticated) {
         return (<>{children}</>);
     }

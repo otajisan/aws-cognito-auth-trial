@@ -32,14 +32,11 @@ const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
 
     const updateUserAttributes = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(e);
-        console.log(auth)
         const attr = {} as UserAttributes;
         if (email !== '') {
             attr.email = email;
         }
         const result = await auth.updateUserAttributes(attr);
-        console.log(result);
         if (result.success) {
             await Router.push('/user-attr/verification-submit');
         } else {
@@ -47,8 +44,6 @@ const ChangeUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
             setErrorMessage(result.message);
         }
     };
-
-    console.log('username: ' + auth.username);
 
     const theme = createTheme();
 

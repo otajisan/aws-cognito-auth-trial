@@ -6,7 +6,8 @@ import AuthenticationChecker from "../components/authentication-checker";
 
 
 function AwsCognitoAuthTrial({Component, pageProps}: AppProps) {
-    return (
+  // @ts-ignore
+  return (
         <ProvideAuth>
             <Layout>
                 <AuthenticationChecker>

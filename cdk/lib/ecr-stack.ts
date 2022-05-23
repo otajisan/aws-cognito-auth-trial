@@ -1,6 +1,7 @@
 import {RemovalPolicy, Stack, StackProps, Tags} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {Repository} from "aws-cdk-lib/aws-ecr";
+import {TagMutability} from "aws-cdk-lib/aws-ecr/lib/repository";
 
 export class EcrStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -9,6 +10,7 @@ export class EcrStack extends Stack {
         const repository = new Repository(this, 'AwsCognitoAuthTrialRepository', {
             repositoryName: 'aws-cognito-auth-trial',
             imageScanOnPush: true,
+            imageTagMutability: TagMutability.MUTABLE,
             removalPolicy: RemovalPolicy.DESTROY,
         });
 

@@ -17,8 +17,6 @@ const NavigationBar = () => {
     const {selectedTab, setSelectedTab, handleTabChange, handleMenuClick} = useTabNavigation();
 
     const {isLoading, isAuthenticated, isSignedIn} = useAuth();
-    console.log('[tab] isLoading: ' + isLoading + ' isAuthenticated:' + isAuthenticated);
-    console.log(selectedTab);
 
     // if (!isLoading) {
     //     console.warn('now still loading auth...');
@@ -40,7 +38,6 @@ const NavigationBar = () => {
         return <></>;
     }
 
-    console.log('return tab navigation bar.')
     return (
         <Tabs
             value={selectedTab.url}
