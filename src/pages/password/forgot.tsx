@@ -25,69 +25,69 @@ import {Alert} from "@mui/material";
  * @constructor
  */
 const ForgotPassword: NextPage = (props: PropsWithChildren<Props>) => {
-    const auth = useAuth();
-    const [username, setUsername] = useState('');
-    const [isAuthFailed, setAuthFailed] = useState(false);
+  const auth = useAuth();
+  const [username, setUsername] = useState('');
+  const [isAuthFailed, setAuthFailed] = useState(false);
 
-    const forgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const result = await auth.forgotPassword(username);
-        if (result.success) {
-            await Router.push('/password/forgot-submit');
-        } else {
-            setAuthFailed(true);
-        }
-    };
+  const forgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result = await auth.forgotPassword(username);
+    if (result.success) {
+      await Router.push('/password/forgot-submit');
+    } else {
+      setAuthFailed(true);
+    }
+  };
 
-    const theme = createTheme();
+  const theme = createTheme();
 
-    return (
-        <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <LockOutlinedIcon/>
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Hi, Please change your password.
-                    </Typography>
-                    <Box component="form" onSubmit={forgotPassword} noValidate sx={{mt: 1}}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="outlined"
-                            sx={{mt: 3, mb: 2}}
-                        >
-                            Change password
-                        </Button>
-                        <Grid container>
-                            {isAuthFailed ? (<Alert severity="error">Failed to reset password...</Alert>) : (<></>)}
-                        </Grid>
-                    </Box>
-                </Box>
-            </Container>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline/>
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+            <LockOutlinedIcon/>
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Hi, Please change your password.
+          </Typography>
+          <Box component="form" onSubmit={forgotPassword} noValidate sx={{mt: 1}}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="outlined"
+              sx={{mt: 3, mb: 2}}
+            >
+              Change password
+            </Button>
+            <Grid container>
+              {isAuthFailed ? (<Alert severity="error">Failed to reset password...</Alert>) : (<></>)}
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
 };
 
 type Props = {};

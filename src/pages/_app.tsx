@@ -8,14 +8,14 @@ import AuthenticationChecker from "../components/authentication-checker";
 function AwsCognitoAuthTrial({Component, pageProps}: AppProps) {
   // @ts-ignore
   return (
-        <ProvideAuth>
-            <Layout>
-                <AuthenticationChecker>
-                    <Component {...pageProps} />
-                </AuthenticationChecker>
-            </Layout>
-        </ProvideAuth>
-    );
+    <ProvideAuth>
+      <Layout>
+        <AuthenticationChecker>
+          <Component {...pageProps} />
+        </AuthenticationChecker>
+      </Layout>
+    </ProvideAuth>
+  );
 }
 
 export default AwsCognitoAuthTrial;

@@ -25,101 +25,101 @@ import {Alert} from "@mui/material";
  * @constructor
  */
 const VerificationSubmitUserAttributes: NextPage = (props: PropsWithChildren<Props>) => {
-    const auth = useAuth();
-    const [verificationCode, setVerificationCode] = useState('');
-    const [isError, setIsError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+  const auth = useAuth();
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-    const verifyCurrentUserAttributeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const result = await auth.verifyCurrentUserAttributeSubmit(verificationCode);
-        if (result.success) {
-            await Router.push('/user-attr/change');
-        } else {
-            setIsError(true);
-            setErrorMessage(result.message);
-        }
-    };
+  const verifyCurrentUserAttributeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result = await auth.verifyCurrentUserAttributeSubmit(verificationCode);
+    if (result.success) {
+      await Router.push('/user-attr/change');
+    } else {
+      setIsError(true);
+      setErrorMessage(result.message);
+    }
+  };
 
-    const verifyCurrentUserAttribute = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        const result = await auth.verifyCurrentUserAttribute();
-        if (!result.success) {
-            setIsError(true);
-            setErrorMessage(result.message);
-        }
-    };
+  const verifyCurrentUserAttribute = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const result = await auth.verifyCurrentUserAttribute();
+    if (!result.success) {
+      setIsError(true);
+      setErrorMessage(result.message);
+    }
+  };
 
-    const theme = createTheme();
+  const theme = createTheme();
 
-    return (
-        <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <LockOutlinedIcon/>
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        update your attributes.
-                    </Typography>
-                    <Box component="form" onSubmit={verifyCurrentUserAttributeSubmit} noValidate sx={{mt: 1}}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            defaultValue={auth.email}
-                            contentEditable={false}
-                            disabled={true}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="verification-code"
-                            label="Verification Code"
-                            name="verification-code"
-                            autoFocus
-                            value={verificationCode}
-                            onChange={(e) => setVerificationCode(e.target.value)}
-                        />
-                        <Button
-                            type="button"
-                            fullWidth
-                            variant="outlined"
-                            sx={{mt: 3, mb: 2}}
-                            onClick={verifyCurrentUserAttribute}
-                        >
-                            re-send
-                        </Button>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="outlined"
-                            sx={{mt: 3, mb: 2}}
-                        >
-                            verify
-                        </Button>
-                        <Grid container>
-                            {isError ? (<Alert severity="error">{errorMessage}</Alert>) : (<></>)}
-                        </Grid>
-                    </Box>
-                </Box>
-            </Container>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline/>
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+            <LockOutlinedIcon/>
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            update your attributes.
+          </Typography>
+          <Box component="form" onSubmit={verifyCurrentUserAttributeSubmit} noValidate sx={{mt: 1}}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              defaultValue={auth.email}
+              contentEditable={false}
+              disabled={true}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="verification-code"
+              label="Verification Code"
+              name="verification-code"
+              autoFocus
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+            />
+            <Button
+              type="button"
+              fullWidth
+              variant="outlined"
+              sx={{mt: 3, mb: 2}}
+              onClick={verifyCurrentUserAttribute}
+            >
+              re-send
+            </Button>
+            <Button
+              type="submit"
+              fullWidth
+              variant="outlined"
+              sx={{mt: 3, mb: 2}}
+            >
+              verify
+            </Button>
+            <Grid container>
+              {isError ? (<Alert severity="error">{errorMessage}</Alert>) : (<></>)}
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
 };
 
 type Props = {};

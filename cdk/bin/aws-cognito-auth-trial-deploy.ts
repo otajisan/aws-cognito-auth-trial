@@ -6,11 +6,13 @@ import {VpcStack} from "../lib/vpc-stack";
 import {EcrStack} from "../lib/ecr-stack";
 
 const env = {
-    account: process.env.CDK_DEPLOY_ACCOUNT,
-    region: process.env.CDK_DEPLOY_REGION,
+  account: process.env.CDK_DEPLOY_ACCOUNT,
+  region: process.env.CDK_DEPLOY_REGION,
 };
 
 const app = new cdk.App();
 new VpcStack(app, 'AwsCognitoAuthTrialVpcStack', {env});
 new EcrStack(app, 'AwsCognitoAuthTrialEcrStack', {env});
 new AwsCognitoAuthTrialAppStack(app, 'AwsCognitoAuthTrialAppStack', {env});
+
+app.synth();
