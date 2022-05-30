@@ -12,7 +12,7 @@ const Welcome: NextPage = (props: PropsWithChildren<Props>) => {
   const auth = useAuth();
   const [isAuthFailed, setAuthFailed] = useState(false);
 
-  const {isLoading, isError, errorMessage, greetingMessage} = useGreetingMessage(auth.username);
+  const {isLoading, isError, errorMessage, greetingMessage} = useGreetingMessage();
 
   const signOut = async (e: any) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ const Welcome: NextPage = (props: PropsWithChildren<Props>) => {
     <div className={'flex m-4'}>
       <Box>
         <div className={'mb-4'}><h1>{greetingMessage?.message}</h1></div>
-        <div className={'mb-4'}><h3>Login: {auth.isAuthenticated ? 'signed in' : 'not signed in'}</h3></div>
+        <div className={'mb-4'}><h3>status: {auth.isAuthenticated ? 'signed in' : 'not signed in'}</h3></div>
 
         <Button onClick={signOut} variant={'outlined'} disabled={auth.isLoading}>
           Sign out

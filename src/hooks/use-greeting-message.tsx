@@ -1,7 +1,7 @@
 import axios from "axios";
 import {useEffect, useState} from "react";
 
-export const useGreetingMessage = (username: string) => {
+export const useGreetingMessage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -13,7 +13,7 @@ export const useGreetingMessage = (username: string) => {
     setErrorMessage('');
 
     const f = async () => {
-      return await getGreetingMessage(username);
+      return await getGreetingMessage();
     }
 
     f().then(r => {
@@ -36,8 +36,8 @@ export const useGreetingMessage = (username: string) => {
   };
 };
 
-const getGreetingMessage: (username: string) => Promise<GreetingMessage> = async (username) => {
-  const message = 'Welcome! ' + username;
+const getGreetingMessage: () => Promise<GreetingMessage> = async () => {
+  const message = 'Welcome!';
   return await axios
     .get('/api/greeting/' + message, {
       headers: {
