@@ -8,12 +8,8 @@ import {ManagedPolicy} from "aws-cdk-lib/aws-iam";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Repository} from "aws-cdk-lib/aws-ecr";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import {
-  ApplicationProtocol,
-  ApplicationProtocolVersion,
-  ListenerAction,
-  SslPolicy
-} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import {ApplicationProtocol, ListenerAction, SslPolicy} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import {Certificate} from "aws-cdk-lib/aws-certificatemanager";
 
 export class AwsCognitoAuthTrialAppStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -106,6 +102,7 @@ export class AwsCognitoAuthTrialAppStack extends Stack {
     ecsSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(3000), 'allow access to Artemis API - Beta');
 
     // ECS - Fargate with ALB
+    const certificateArn = StringParameter.valueFromLookup(this, 'MORNING_CODE_ACM_WILDCARD_CERT_ARN');
     const fargateService = new ApplicationLoadBalancedFargateService(this, 'ECSService', {
       cluster: ecsCluster,
       serviceName: appName,
@@ -114,32 +111,9 @@ export class AwsCognitoAuthTrialAppStack extends Stack {
       taskDefinition,
       securityGroups: [ecsSecurityGroup],
       publicLoadBalancer: true,
-    });
-
-    const certificateArn = StringParameter.valueFromLookup(this, 'MORNING_CODE_ACM_WILDCARD_CERT_ARN');
-
-    const httpListener = fargateService.loadBalancer.addListener('HTTPListener', {
-      port: 80,
-      open: true,
-      defaultAction: ListenerAction.redirect({
-        port: '443',
-        protocol: ApplicationProtocol.HTTPS,
-      })
-    });
-
-    const sslListener = fargateService.loadBalancer.addListener('SSLListener', {
-      port: 443,
-      open: true,
+      redirectHTTP: true,
       sslPolicy: SslPolicy.RECOMMENDED,
-      certificates: [{
-        certificateArn: certificateArn,
-      }],
-    });
-
-    sslListener.addTargets('SSLTarget', {
-      targetGroupName: fargateService.targetGroup.targetGroupName,
-      protocol: ApplicationProtocol.HTTP,
-      protocolVersion: ApplicationProtocolVersion.HTTP1,
+      certificate: Certificate.fromCertificateArn(this, 'Cert', certificateArn),
     });
 
     fargateService.targetGroup.configureHealthCheck({

@@ -13,11 +13,11 @@ export GIT_SHA1=local
 ## How to deploy?
 
 ```bash
-npx awsCognitoAuthTrialDeploy diff --profile=morning-code-dev AwsCognitoAuthTrialVpcStack
-npx awsCognitoAuthTrialDeploy diff --profile=morning-code-dev AwsCognitoAuthTrialEcrStack
-npx awsCognitoAuthTrialDeploy diff --profile morning-code-dev AwsCognitoAuthTrialAppStack
+npx cdk diff --profile=morning-code-dev AwsCognitoAuthTrialVpcStack
+npx cdk diff --profile=morning-code-dev AwsCognitoAuthTrialEcrStack
+npx cdk diff --profile morning-code-dev AwsCognitoAuthTrialAppStack
 
-npx awsCognitoAuthTrialDeploy deploy --profile morning-code-dev AwsCognitoAuthTrialVpcStack
-npx awsCognitoAuthTrialDeploy deploy --profile morning-code-dev AwsCognitoAuthTrialEcrStack
-npx awsCognitoAuthTrialDeploy deploy --profile morning-code-dev AwsCognitoAuthTrialAppStack
+npx cdk deploy --profile morning-code-dev AwsCognitoAuthTrialVpcStack
+npx cdk deploy --profile morning-code-dev AwsCognitoAuthTrialEcrStack
+npx cdk deploy --profile morning-code-dev AwsCognitoAuthTrialAppStack
 ```
