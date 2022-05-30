@@ -8,7 +8,12 @@ import {ManagedPolicy} from "aws-cdk-lib/aws-iam";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Repository} from "aws-cdk-lib/aws-ecr";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
-import {ApplicationProtocol, ListenerAction, SslPolicy} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import {
+  ApplicationProtocol,
+  ApplicationProtocolVersion,
+  ListenerAction,
+  SslPolicy
+} from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 export class AwsCognitoAuthTrialAppStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -129,6 +134,12 @@ export class AwsCognitoAuthTrialAppStack extends Stack {
       certificates: [{
         certificateArn: certificateArn,
       }],
+    });
+
+    sslListener.addTargets('SSLTarget', {
+      targetGroupName: fargateService.targetGroup.targetGroupName,
+      protocol: ApplicationProtocol.HTTP,
+      protocolVersion: ApplicationProtocolVersion.HTTP1,
     });
 
     fargateService.targetGroup.configureHealthCheck({
