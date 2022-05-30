@@ -111,7 +111,7 @@ export class AwsCognitoAuthTrialAppStack extends Stack {
       taskDefinition,
       securityGroups: [ecsSecurityGroup],
       publicLoadBalancer: true,
-      //redirectHTTP: true,
+      redirectHTTP: true,
       sslPolicy: SslPolicy.RECOMMENDED,
       certificate: Certificate.fromCertificateArn(this, 'Cert', certificateArn),
     });
