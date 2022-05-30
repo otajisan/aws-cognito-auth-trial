@@ -54,7 +54,7 @@ NEXT_PUBLIC_AUTH_COOKIE_STORAGE_DOMAIN=auth-trial.morningcode.io
 
 ## deploy to AWS
 
-- see [cdk](https://github.com/otajisan/aws-cognito-auth-trial/tree/main/cdk) directory.
+- see [awsCognitoAuthTrialDeploy](https://github.com/otajisan/aws-cognito-auth-trial/tree/main/awsCognitoAuthTrialDeploy) directory.
 
 ## references
 - https://tailwindcss.com/docs/installation

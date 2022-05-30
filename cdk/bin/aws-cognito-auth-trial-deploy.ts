@@ -14,3 +14,5 @@ const app = new cdk.App();
 new VpcStack(app, 'AwsCognitoAuthTrialVpcStack', {env});
 new EcrStack(app, 'AwsCognitoAuthTrialEcrStack', {env});
 new AwsCognitoAuthTrialAppStack(app, 'AwsCognitoAuthTrialAppStack', {env});
+
+app.synth();
